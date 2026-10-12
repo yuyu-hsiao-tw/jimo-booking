@@ -4,7 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#17120e">
-<title>Jim膜｜境 整合工作室｜筋膜放鬆預約空檔</title>
+<title>筋膜調理</title>
+<meta name="description" content="查看 JIMO STUDIO 可預約時段，選好後透過 LINE 送出預約。筋膜刀・能量療癒・整合訓練。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://yuyu-hsiao-tw.github.io/jimo-booking/">
+<meta property="og:title" content="筋膜調理">
+<meta property="og:description" content="查看可預約時段，選好後透過 LINE 送出預約。筋膜刀・能量療癒・整合訓練。">
+<meta property="og:image" content="https://yuyu-hsiao-tw.github.io/jimo-booking/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <style>
 :root{
   --bg:#f6f1e9; --paper:#fffdf9; --ink:#191510; --muted:#766d63;
@@ -84,6 +92,9 @@ button{cursor:pointer}
 .slot-meta{font-size:11px;color:#8a8179;margin-top:2px}
 .slot-arrow{width:30px;height:30px;border-radius:50%;background:var(--brown2);color:white;display:grid;place-items:center}
 .empty{padding:20px 4px;color:#8b8178;font-size:14px}
+.notice{display:flex;gap:10px;align-items:flex-start;margin:0 0 14px;padding:12px 14px;border-radius:14px;background:#f6ece0;border:1px solid #ead7c1;color:#6b4a2e;font-size:13.5px;line-height:1.65}
+.notice svg{flex:none;margin-top:2px;color:#b97943}
+.notice b{color:#9a5a2b;font-weight:600}
 .info{margin-top:24px;padding:18px;border:1px solid var(--line);border-radius:18px;background:#fcf8f2}
 .info-row{display:flex;gap:12px;margin:8px 0;color:#5f574f;font-size:13px}
 .info-row strong{min-width:76px;color:#2e2823}
@@ -141,15 +152,19 @@ button{cursor:pointer}
     <section class="slots" aria-live="polite">
       <h3 class="date-title" id="dateTitle"></h3>
       <p class="date-sub" id="dateSub"></p>
+      <div class="notice" id="notice" hidden>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg>
+        <span>點選時段只會<b>複製預約文字</b>，還不算完成預約。<br>請按下方綠色「<b>LINE 前往聯繫</b>」，貼上文字送出，收到確認回覆後才算預約成功。</span>
+      </div>
       <div class="slot-list" id="slotList"></div>
     </section>
 
     <div class="info">
-      <div class="info-row"><strong>營業時段</strong><span>13:00–14:30｜15:30–17:00<br>晚上 18:00 或 18:30 起<br>每段 90 分鐘，間隔 30 分鐘</span></div>
+      <div class="info-row"><strong>營業時間</strong><span>13:00 – 22:00</span></div>
       <div class="info-row"><strong>固定公休</strong><span>每週二、六</span></div>
       <div class="info-row"><strong>開放範圍</strong><span>未來 6 個月</span></div>
       <a class="line-btn" id="lineLink" href="#" target="_blank" rel="noopener">LINE　前往聯繫</a>
-      <p class="note" id="status">空檔會依 Google 行事曆更新；私人行程內容不會顯示。</p>
+      <p class="note" id="status"></p>
     </div>
   </section>
 </main>
@@ -304,13 +319,11 @@ function render(){
     ? "暫時無法讀取行事曆，請直接 LINE 詢問可預約時段。"
     : data.stale
     ? `連線不穩，以下為 ${stamp} 的空檔，實際請以 LINE 確認。`
-    : data.demo
-    ? "目前為示範空檔；接上 Google 行事曆後會自動換成真實可約時段。"
-    : `空檔依 Google 行事曆更新（${stamp}）；私人行程內容不會顯示。`;
+    : "";
 }
 
 function renderSlots(info){
-  const list=$("slotList"); list.innerHTML="";
+  const list=$("slotList"); list.innerHTML=""; $("notice").hidden=true;
   if(!info){$("dateTitle").textContent="";$("dateSub").textContent="";return}
   const d=parseDate(info.key),m=d.getMonth()+1,dd=d.getDate();
   $("dateTitle").textContent=`${m} 月 ${dd} 日（${WD[d.getDay()]}）`;
@@ -327,6 +340,7 @@ function renderSlots(info){
     return;
   }
   $("dateSub").textContent=info.free.length?"尚有以下可預約時段":"這天目前沒有可預約時段";
+  $("notice").hidden=!info.free.length;
   /* 重點：不能約、已約、已過的時段完全不渲染。 */
   info.free.forEach(([start,end])=>{
     const b=document.createElement("button");
