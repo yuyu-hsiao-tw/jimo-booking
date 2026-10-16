@@ -85,6 +85,15 @@ button{cursor:pointer}
 .day.selected .dot{background:white}
 .day.rest:after{content:"休";font-size:9px;color:#aaa19a;margin-top:2px}
 .day.blank{visibility:hidden}
+.calendar.by-time .day:not(.live){color:#cfc7bf}
+.calendar.by-time .day.live:not(.selected){background:#f3e2cf;color:#7a4519;font-weight:700;box-shadow:inset 0 0 0 1.5px #dcb48a}
+.calendar.by-time .day.live:not(.selected) .dot{display:none}
+.soon{margin:0 0 14px}
+.soon[hidden]{display:none}
+.soon p{margin:0 0 8px;font-size:13px;color:#7a6c60}
+.soon div{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.soon button{flex:none;appearance:none;border:1px solid #dcb48a;border-radius:999px;background:#fbf3ea;color:#7a4519;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer}
+.soon button.on{background:var(--brown2);border-color:var(--brown2);color:#fff}
 .legend{display:flex;gap:16px;flex-wrap:wrap;padding:12px 16px 15px;border-top:1px solid #f0e8df;color:#776f67;font-size:11px}
 .legend span{display:flex;align-items:center;gap:6px}
 .legend i{width:7px;height:7px;border-radius:50%;background:var(--brown2)}
@@ -157,6 +166,7 @@ button{cursor:pointer}
       <button type="button" data-mode="time" role="tab">先選時段</button>
     </div>
     <div class="times" id="times" hidden></div>
+    <div class="soon" id="soon" hidden><p>最近可預約的日期</p><div id="soonList"></div></div>
 
     <div class="calendar">
       <div class="cal-head">
@@ -167,7 +177,7 @@ button{cursor:pointer}
       <div class="week" id="week"></div>
       <div class="days" id="days"></div>
       <div class="legend">
-        <span><i></i>有可預約時段</span>
+        <span id="legendLive"><i></i>有可預約時段</span>
         <span><i class="off"></i>無空檔</span>
         <span>休＝每週二、六公休</span>
       </div>
@@ -325,6 +335,23 @@ function renderTimes(){
     box.appendChild(b);
   });
 }
+function renderSoon(){
+  const box=$("soon"); box.hidden=!(mode==="time"&&pick); if(box.hidden)return;
+  const list=$("soonList"); list.innerHTML="";
+  const today=midnight(); let n=0;
+  for(let i=0;i<DAYS_AHEAD&&n<8;i++){
+    const d=addDays(today,i),k=ymd(d);
+    if(!freeOf(dayInfo(k)).length) continue;
+    n++;
+    const b=document.createElement("button"); b.type="button";
+    b.className=k===selected?"on":"";
+    b.textContent=`${d.getMonth()+1}/${d.getDate()}（${WD[d.getDay()]}）`;
+    b.onclick=()=>{selected=k;view=new Date(d.getFullYear(),d.getMonth(),1);render();
+      setTimeout(()=>$("dateTitle").scrollIntoView({behavior:"smooth",block:"center"}),30)};
+    list.appendChild(b);
+  }
+  if(!n) list.innerHTML='<span style="font-size:13px;color:#8b8178">這個時段近期都已約滿</span>';
+}
 function jumpFirst(){
   const today=midnight(), k=firstFree(today);
   if(k){selected=k;const d=parseDate(k);view=new Date(d.getFullYear(),d.getMonth(),1);}
@@ -383,6 +410,9 @@ function render(){
   }
   renderSlots(dayInfo(selected));
   renderTimes();
+  renderSoon();
+  document.querySelector(".calendar").classList.toggle("by-time",mode==="time");
+  $("legendLive").innerHTML=mode==="time"?`<i style="width:12px;height:12px;background:#f3e2cf;box-shadow:inset 0 0 0 1.5px #dcb48a"></i>${pick} 可預約`:"<i></i>有可預約時段";
 
   const stamp=new Date(data.updatedAt||Date.now()).toLocaleTimeString("zh-TW",{hour:"2-digit",minute:"2-digit",hour12:false});
   $("status").textContent=data.error
