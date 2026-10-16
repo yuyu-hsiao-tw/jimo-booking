@@ -55,6 +55,17 @@ button{cursor:pointer}
 .iconbox{width:42px;height:42px;border-radius:14px;background:#f5e9da;color:var(--brown2);display:grid;place-items:center;font-size:21px}
 .section-title h2{margin:0;font-size:22px;font-weight:650;letter-spacing:.04em}
 .lead{margin:0 0 22px 54px;color:var(--muted);font-size:13px}
+.mode{display:flex;gap:4px;padding:4px;margin:0 0 14px;border-radius:999px;background:#f3e9dd}
+.mode button{flex:1;appearance:none;border:0;border-radius:999px;padding:10px 0;background:transparent;color:#7a6250;font-size:15px;font-weight:600;letter-spacing:.06em;cursor:pointer}
+.mode button.on{background:var(--brown2);color:#fff;box-shadow:0 4px 12px rgba(150,90,45,.25)}
+.times{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 14px}
+.times[hidden]{display:none}
+.times button{appearance:none;border:1px solid var(--line);border-radius:14px;background:#fff;padding:9px 4px 7px;color:#2a211a;cursor:pointer;line-height:1.25}
+.times button b{display:block;font-size:16px;font-weight:650}
+.times button small{display:block;font-size:11px;color:#8b8178}
+.times button.on{background:var(--brown2);border-color:var(--brown2);color:#fff}
+.times button.on small{color:#f6e3cf}
+.times button:disabled{opacity:.4;cursor:default}
 .calendar{border:1px solid var(--line);border-radius:22px;background:#fff;overflow:hidden;box-shadow:0 10px 26px rgba(74,48,28,.06)}
 .cal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 14px 10px}
 .cal-head h3{margin:0;font-size:18px}
@@ -139,7 +150,13 @@ button{cursor:pointer}
       <div class="iconbox"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.2h.01M12 17.2h.01" stroke-width="2.2"/></svg></div>
       <h2>預約時段</h2>
     </div>
-    <p class="lead">選擇日期，查看目前可以預約的時段</p>
+    <p class="lead" id="lead">選擇日期，查看目前可以預約的時段</p>
+
+    <div class="mode" role="tablist" aria-label="預約方式">
+      <button type="button" class="on" data-mode="date" role="tab">先選日期</button>
+      <button type="button" data-mode="time" role="tab">先選時段</button>
+    </div>
+    <div class="times" id="times" hidden></div>
 
     <div class="calendar">
       <div class="cal-head">
@@ -285,10 +302,47 @@ function dayInfo(key){
   return {key,closed:false,free};
 }
 
+/* ===== 先選時段模式 ===== */
+let mode="date", pick=null;
+const TIME_OPTS=[...new Set(FIXED.concat(...EVENING).map(s=>s.join("|")))]
+  .map(s=>s.split("|")).sort((a,b)=>a[0].localeCompare(b[0]));
+const freeOf=info=>!info?[]:(mode==="time"&&pick?info.free.filter(s=>s[0]===pick):info.free);
+
+function countDays(start){
+  const today=midnight(); let n=0;
+  for(let i=0;i<DAYS_AHEAD;i++){const inf=dayInfo(ymd(addDays(today,i)));if(inf&&inf.free.some(s=>s[0]===start))n++}
+  return n;
+}
+function renderTimes(){
+  const box=$("times"); box.hidden=mode!=="time"; if(mode!=="time")return;
+  box.innerHTML="";
+  TIME_OPTS.forEach(([s,e])=>{
+    const n=countDays(s), b=document.createElement("button");
+    b.type="button"; b.className=s===pick?"on":""; b.disabled=!n;
+    b.innerHTML=`<b>${s}</b><small>${n?`${n} 天可約`:"已約滿"}</small>`;
+    b.setAttribute("aria-label",`${s} 到 ${e}，${n} 天可約`);
+    b.onclick=()=>{pick=s;jumpFirst();};
+    box.appendChild(b);
+  });
+}
+function jumpFirst(){
+  const today=midnight(), k=firstFree(today);
+  if(k){selected=k;const d=parseDate(k);view=new Date(d.getFullYear(),d.getMonth(),1);}
+  render();
+}
+function setMode(m){
+  mode=m;
+  document.querySelectorAll(".mode button").forEach(b=>b.classList.toggle("on",b.dataset.mode===m));
+  $("lead").textContent=m==="time"?"先選想要的時段，月曆會標出這個時段還能預約的日期":"選擇日期，查看目前可以預約的時段";
+  if(m==="time"&&!pick){const today=midnight();pick=(TIME_OPTS.find(([s])=>countDays(s))||TIME_OPTS[0])[0];}
+  jumpFirst();
+}
+document.querySelectorAll(".mode button").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+
 function firstFree(from){
   for(let i=0;i<DAYS_AHEAD;i++){
     const k=ymd(addDays(from,i));
-    if(dayInfo(k)?.free.length) return k;
+    if(freeOf(dayInfo(k)).length) return k;
   }
   return null;
 }
@@ -312,7 +366,7 @@ function render(){
 
   for(let n=1;n<=count;n++){
     const d=new Date(y,m,n),key=ymd(d),info=dayInfo(key);
-    const hasFree=!!info?.free.length;
+    const hasFree=!!freeOf(info).length;
     const el=document.createElement(hasFree?"button":"div");
     el.className="day";
     if(hasFree) el.classList.add("live");
@@ -322,12 +376,13 @@ function render(){
     el.innerHTML=`<span>${n}</span>${hasFree?'<i class="dot"></i>':""}`;
     if(hasFree){
       el.type="button";
-      el.setAttribute("aria-label",`${m+1}月${n}日，有 ${info.free.length} 個可預約時段`);
+      el.setAttribute("aria-label",`${m+1}月${n}日，有 ${freeOf(info).length} 個可預約時段`);
       el.onclick=()=>{selected=key;render();setTimeout(()=>$("dateTitle").scrollIntoView({behavior:"smooth",block:"center"}),30)};
     }
     box.appendChild(el);
   }
   renderSlots(dayInfo(selected));
+  renderTimes();
 
   const stamp=new Date(data.updatedAt||Date.now()).toLocaleTimeString("zh-TW",{hour:"2-digit",minute:"2-digit",hour12:false});
   $("status").textContent=data.error
@@ -354,17 +409,18 @@ function renderSlots(info){
     list.innerHTML='<div class="empty">請直接透過下方 LINE 詢問可預約時段。</div>';
     return;
   }
-  $("dateSub").textContent=info.free.length?"尚有以下可預約時段":"這天目前沒有可預約時段";
-  $("notice").hidden=!info.free.length;
+  const free=freeOf(info);
+  $("dateSub").textContent=free.length?"尚有以下可預約時段":(mode==="time"?`這天的 ${pick} 已無空檔`:"這天目前沒有可預約時段");
+  $("notice").hidden=!free.length;
   /* 重點：不能約、已約、已過的時段完全不渲染。 */
-  info.free.forEach(([start,end])=>{
+  free.forEach(([start,end])=>{
     const b=document.createElement("button");
     b.className="slot"; b.type="button";
     b.innerHTML=`<span><div class="slot-time">${start} – ${end}</div><div class="slot-meta">90 分鐘</div></span><span class="slot-arrow">›</span>`;
     b.onclick=()=>copyBooking(m,dd,d.getDay(),start,end,b);
     list.appendChild(b);
   });
-  if(!info.free.length) list.innerHTML='<div class="empty">可以切換其他日期查看空檔。</div>';
+  if(!free.length) list.innerHTML=`<div class="empty">${mode==="time"?"月曆上有小圓點的日期，這個時段還能預約。":"可以切換其他日期查看空檔。"}</div>`;
 }
 
 function copyBooking(m,dd,dow,start,end,button){
