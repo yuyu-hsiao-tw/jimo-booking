@@ -81,9 +81,9 @@ button{cursor:pointer}
 .day.live:hover{background:#f7eee4}
 .day.selected{background:var(--brown2);color:white;box-shadow:0 5px 14px rgba(185,121,67,.28)}
 .day.today:not(.selected){outline:1px solid #d6b18c;outline-offset:-5px}
-.day .dot{width:5px;height:5px;border-radius:50%;background:var(--brown2);margin-top:4px}
+.day .dot{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--brown2)}
 .day.selected .dot{background:white}
-.day.rest:after{content:"休";font-size:9px;color:#aaa19a;margin-top:2px}
+.day.rest:after{content:"休";position:absolute;left:0;right:0;bottom:2px;font-size:9px;line-height:1;text-align:center;color:#aaa19a}
 .day.blank{visibility:hidden}
 .soon{margin:0 0 14px}
 .soon[hidden]{display:none}
@@ -291,7 +291,7 @@ let view,selected;
 const $=id=>document.getElementById(id);
 $("lineLink").href=LINE_URL;
 // 點 LINE 按鈕：先跳提醒，按「確定」後照常開啟 LINE（不擋連結本身，避免被瀏覽器當成彈出視窗擋掉）
-$("lineLink").addEventListener("click",()=>{alert("送出資料不代表預約成功，收到 Jim 回覆確認後，才算完成預約。");});
+$("lineLink").addEventListener("click",()=>{alert("送出資料不代表預約成功，收到 Jim 回覆確認後，才算完成預約喔！");});
 $("week").innerHTML=WD.map(x=>`<div>${x}</div>`).join("");
 
 const pad=n=>String(n).padStart(2,"0");
