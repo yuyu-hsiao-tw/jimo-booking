@@ -120,13 +120,13 @@ button{cursor:pointer}
 .info .note:empty{display:none}
 .tips{margin-top:40px}
 .tips .section-title{margin-bottom:14px}
-.tips-box{background:#fff;border-radius:16px;padding:2px 18px;box-shadow:0 0 3px rgba(185,121,67,.32)}
+.tips-box{border:1px solid var(--line);border-radius:22px;background:#fff;overflow:hidden;box-shadow:0 10px 26px rgba(74,48,28,.06)}
 .tip+.tip{border-top:1px solid #f0e6da}
-.tip summary{list-style:none;display:flex;justify-content:space-between;align-items:center;padding:16px 0;font-size:15px;font-weight:650;letter-spacing:.06em;color:#b97943;cursor:pointer}
+.tip summary{list-style:none;display:flex;justify-content:space-between;align-items:center;padding:16px 18px;font-size:15px;font-weight:650;letter-spacing:.06em;color:#b97943;cursor:pointer;transition:background .15s}
 .tip summary::-webkit-details-marker{display:none}
 .tip .chev{flex:none;transition:transform .2s}
 .tip[open] .chev{transform:rotate(180deg)}
-.tip>div{padding:0 0 16px}
+.tip>div{padding:0 18px 16px}
 .tip p{margin:0 0 10px;font-size:14.5px;line-height:1.85;color:#4a3f36}
 .tip p:last-child{margin-bottom:0}
 .tip strong{font-weight:600;color:var(--ink)}
@@ -159,6 +159,7 @@ button{cursor:pointer}
   .mode button:not(.on):hover{color:var(--brown2);background:rgba(255,255,255,.6)}
   .line-btn:hover{background:#1aa83f;box-shadow:0 6px 16px rgba(32,191,75,.3);transform:translateY(-1px)}
   .nav:not(:disabled):hover{background:#f7eee4;border-radius:50%}
+  .tip summary:hover{background:#f7eee4}
 }
 </style>
 </head>
@@ -234,7 +235,8 @@ button{cursor:pointer}
         <summary>預約方式<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
         <div>
         <p>此頁面僅供查詢可預約時段。請複製您希望的時段，返回 LINE 官方帳號貼上，並依提示填寫預約資料。</p>
-        <p><strong>送出資料不代表預約成功，收到 Jim 回覆確認後，才算完成預約。</strong>時段可能隨時更新，實際安排以雙方確認為準。</p>
+        <p><strong>送出資料不代表預約成功，收到 Jim 回覆確認後，才算完成預約。</strong></p>
+        <p>時段可能隨時更新，實際安排以雙方確認為準。</p>
         </div>
       </details>
       <details class="tip">
