@@ -118,16 +118,20 @@ button{cursor:pointer}
 .notice b{color:#9a5a2b;font-weight:600}
 .info{margin-top:24px}
 .info .note:empty{display:none}
-.tips{margin-top:28px}
-.tips h3{margin:0 0 14px;font-size:18px;font-weight:700;letter-spacing:.06em;color:var(--ink)}
-.tip-card{background:#fff;border-radius:16px;padding:16px 18px;margin-bottom:12px;box-shadow:0 0 3px rgba(185,121,67,.32)}
-.tip-card h4{margin:0 0 8px;font-size:15px;font-weight:650;letter-spacing:.06em;color:#b97943}
-.tip-card p{margin:0 0 10px;font-size:14.5px;line-height:1.85;color:#4a3f36}
-.tip-card p:last-child{margin-bottom:0}
-.tip-card strong{font-weight:600;color:var(--ink)}
-.tip-card ul{margin:0 0 10px;padding:0;list-style:none}
-.tip-card li{position:relative;padding:2px 0 2px 16px;font-size:14.5px;line-height:1.85;color:#4a3f36}
-.tip-card li::before{content:"・";position:absolute;left:-3px;color:#b97943;font-weight:700}
+.tips{margin-top:28px;padding:18px 18px 8px;border-radius:18px;background:#faf4ec}
+.tips h3{margin:0 0 6px;font-size:18px;font-weight:700;letter-spacing:.06em;color:var(--ink)}
+.tip+.tip{border-top:1px solid #efe2d2}
+.tip summary{list-style:none;display:flex;justify-content:space-between;align-items:center;padding:14px 0;font-size:13px;font-weight:600;letter-spacing:.14em;color:#b97943;cursor:pointer}
+.tip summary::-webkit-details-marker{display:none}
+.tip .chev{flex:none;transition:transform .2s}
+.tip[open] .chev{transform:rotate(180deg)}
+.tip>div{padding:0 0 14px}
+.tip p{margin:0 0 10px;font-size:14.5px;line-height:1.85;color:#4a3f36}
+.tip p:last-child{margin-bottom:0}
+.tip strong{font-weight:600;color:var(--ink)}
+.tip ul{margin:0 0 10px;padding:0;list-style:none}
+.tip li{position:relative;padding:2px 0 2px 16px;font-size:14.5px;line-height:1.85;color:#4a3f36}
+.tip li::before{content:"・";position:absolute;left:-3px;color:#b97943;font-weight:700}
 .info-row{display:flex;gap:12px;margin:8px 0;color:#5f574f;font-size:13px}
 .info-row strong{min-width:76px;color:#2e2823}
 .facts{margin:0 0 18px;padding:4px 16px;border-radius:16px;background:#faf4ec}
@@ -215,33 +219,39 @@ button{cursor:pointer}
       <div class="slot-list" id="slotList"></div>
       <div class="notice" id="notice" hidden>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg>
-        <span>點選時段只會<b>複製預約文字</b>，還不算完成預約。<br>請按下方綠色「<b>LINE 前往聯繫</b>」貼上，<b>補上姓名、手機等資料</b>後送出，收到確認回覆才算預約成功。</span>
+        <span>點選時段只會<b>複製預約文字</b>，還不算完成預約。<br>請按下方綠色「<b>前往 LINE 預約</b>」貼上，<b>補上姓名、手機等資料</b>後送出，收到確認回覆才算預約成功。</span>
       </div>
     </section>
 
     <section class="tips" aria-label="預約注意事項">
       <h3>預約注意事項</h3>
-      <div class="tip-card">
-        <h4>預約方式</h4>
+      <details class="tip" open>
+        <summary>預約方式<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div>
         <p>此頁面僅供查詢可預約時段。請複製您希望的時段，返回 LINE 官方帳號貼上，並依提示填寫預約資料。</p>
         <p><strong>送出資料不代表預約成功，收到 Jim 回覆確認後，才算完成預約。</strong>時段可能隨時更新，實際安排以雙方確認為準。</p>
-      </div>
-      <div class="tip-card">
-        <h4>服裝與攜帶衣物</h4>
+        </div>
+      </details>
+      <details class="tip">
+        <summary>服裝與攜帶衣物<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div>
         <p>調整會依身體狀態進行全身性的評估與處理，請穿著輕便、方便活動的服裝，並準備以下衣物供現場更換：</p>
         <ul>
           <li>所有客人請攜帶寬鬆、有彈性的短褲。</li>
           <li>女性請另攜帶運動內衣，方便肩背與軀幹部位的評估及操作。</li>
         </ul>
         <p>筋膜刀操作會搭配乳液，並需接觸施作部位的皮膚，請配合準備合適衣物。</p>
-      </div>
-      <div class="tip-card">
-        <h4>取消、改期與遲到</h4>
+        </div>
+      </details>
+      <details class="tip">
+        <summary>取消、改期與遲到<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div>
         <p>如需取消、改期或可能遲到，請提前透過 LINE 官方帳號告知，以利安排後續時段。</p>
-      </div>
+        </div>
+      </details>
     </section>
     <div class="info">
-      <a class="line-btn" id="lineLink" href="#" target="_blank" rel="noopener">LINE　前往聯繫</a>
+      <a class="line-btn" id="lineLink" href="#" target="_blank" rel="noopener">前往 LINE 預約</a>
       <p class="note" id="status"></p>
     </div>
   </section>
@@ -272,6 +282,8 @@ let view,selected;
 
 const $=id=>document.getElementById(id);
 $("lineLink").href=LINE_URL;
+// 點 LINE 按鈕：先跳提醒，按「確定」後照常開啟 LINE（不擋連結本身，避免被瀏覽器當成彈出視窗擋掉）
+$("lineLink").addEventListener("click",()=>{alert("送出資料不代表預約成功，收到 Jim 回覆確認後，才算完成預約。");});
 $("week").innerHTML=WD.map(x=>`<div>${x}</div>`).join("");
 
 const pad=n=>String(n).padStart(2,"0");
