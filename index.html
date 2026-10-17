@@ -138,6 +138,16 @@ button{cursor:pointer}
  body{padding:30px 0}.app{border-radius:32px;overflow:hidden;min-height:auto}.hero{min-height:390px}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+/* ===== hover 效果（只在有滑鼠的裝置） ===== */
+.times button,.soon button,.mode button,.line-btn,.nav{transition:background .18s ease,color .18s ease,box-shadow .18s ease,transform .18s ease}
+@media (hover:hover){
+  .times button:not(.on):not(:disabled):hover,
+  .soon button:not(.on):hover{color:var(--brown2);box-shadow:0 0 5px rgba(185,121,67,.45);transform:translateY(-1px)}
+  .times button.on:hover,.soon button.on:hover,.mode button.on:hover{background:#a8693a}
+  .mode button:not(.on):hover{color:var(--brown2);background:rgba(255,255,255,.6)}
+  .line-btn:hover{background:#1aa83f;box-shadow:0 6px 16px rgba(32,191,75,.3);transform:translateY(-1px)}
+  .nav:not(:disabled):hover{background:#f7eee4;border-radius:50%}
+}
 </style>
 </head>
 <body>
