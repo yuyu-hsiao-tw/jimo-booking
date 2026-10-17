@@ -88,7 +88,10 @@ button{cursor:pointer}
 .soon{margin:0 0 14px}
 .soon[hidden]{display:none}
 .soon p{margin:0 0 8px;font-size:13px;color:#7a6c60}
-.soon div{display:flex;gap:8px;overflow-x:auto;padding:4px 3px 10px;margin:-4px -3px 0;scrollbar-width:none}
+.soon div{display:flex;gap:8px;overflow-x:auto;padding:4px 3px 10px;margin:-4px -3px 0;scrollbar-width:none;-webkit-mask-image:var(--fade);mask-image:var(--fade);--fl:0px;--fr:0px;--fade:linear-gradient(to right,transparent 0,#000 var(--fl),#000 calc(100% - var(--fr)),transparent 100%)}
+.soon div::-webkit-scrollbar{display:none}
+.soon div.fade-l{--fl:28px}
+.soon div.fade-r{--fr:64px}
 .soon button{flex:none;appearance:none;border:0;border-radius:999px;background:#fff;color:#7a6250;padding:8px 14px;font-size:14px;font-weight:500;cursor:pointer;box-shadow:0 0 3px rgba(185,121,67,.32)}
 .soon button.on{background:var(--brown2);color:#fff;box-shadow:0 4px 12px rgba(150,90,45,.25)}
 .legend{display:flex;gap:16px;flex-wrap:wrap;padding:12px 16px 15px;border-top:1px solid #f0e8df;color:#776f67;font-size:11px}
@@ -367,7 +370,18 @@ function renderSoon(){
     list.appendChild(b);
   }
   if(!n) list.innerHTML='<span style="font-size:13px;color:#8b8178">這個時段近期都已約滿</span>';
+  const on=list.querySelector("button.on");
+  if(on) list.scrollLeft=Math.max(0,on.offsetLeft-list.clientWidth/2+on.offsetWidth/2);
+  updateFade();
 }
+function updateFade(){
+  const el=$("soonList"); if(!el)return;
+  const max=el.scrollWidth-el.clientWidth;
+  el.classList.toggle("fade-l",el.scrollLeft>2);
+  el.classList.toggle("fade-r",el.scrollLeft<max-2);
+}
+$("soonList").addEventListener("scroll",updateFade,{passive:true});
+window.addEventListener("resize",updateFade);
 function jumpFirst(){
   const today=midnight(), k=firstFree(today);
   if(k){selected=k;const d=parseDate(k);view=new Date(d.getFullYear(),d.getMonth(),1);}
