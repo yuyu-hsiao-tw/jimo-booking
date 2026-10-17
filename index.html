@@ -118,12 +118,16 @@ button{cursor:pointer}
 .notice b{color:#9a5a2b;font-weight:600}
 .info{margin-top:24px}
 .info .note:empty{display:none}
-.tips{margin-top:24px;padding:18px 18px 16px;border:1px solid var(--line);border-radius:18px;background:#fff}
-.tips h3{margin:0 0 12px;font-size:17px;font-weight:700;letter-spacing:.04em;color:var(--ink)}
-.tips ul{margin:0;padding:0;list-style:none}
-.tips li{display:flex;gap:8px;padding:7px 0;font-size:15px;line-height:1.6;color:#4a3f36;border-top:1px dashed #eee3d6}
-.tips li:first-child{border-top:0}
-.tips li span:first-child{flex:none}
+.tips{margin-top:28px}
+.tips h3{margin:0 0 14px;font-size:18px;font-weight:700;letter-spacing:.06em;color:var(--ink)}
+.tip-card{background:#fff;border-radius:16px;padding:16px 18px;margin-bottom:12px;box-shadow:0 0 3px rgba(185,121,67,.32)}
+.tip-card h4{margin:0 0 8px;font-size:15px;font-weight:650;letter-spacing:.06em;color:#b97943}
+.tip-card p{margin:0 0 10px;font-size:14.5px;line-height:1.85;color:#4a3f36}
+.tip-card p:last-child{margin-bottom:0}
+.tip-card strong{font-weight:600;color:var(--ink)}
+.tip-card ul{margin:0 0 10px;padding:0;list-style:none}
+.tip-card li{position:relative;padding:2px 0 2px 16px;font-size:14.5px;line-height:1.85;color:#4a3f36}
+.tip-card li::before{content:"・";position:absolute;left:-3px;color:#b97943;font-weight:700}
 .info-row{display:flex;gap:12px;margin:8px 0;color:#5f574f;font-size:13px}
 .info-row strong{min-width:76px;color:#2e2823}
 .facts{margin:0 0 18px;padding:4px 16px;border-radius:16px;background:#faf4ec}
@@ -215,13 +219,26 @@ button{cursor:pointer}
       </div>
     </section>
 
-    <section class="tips" aria-label="注意事項">
-      <h3>注意事項❗️</h3>
-      <ul>
-        <li><span>✅</span><span>請穿著輕便服裝或是運動服</span></li>
-        <li><span>✅</span><span>筋膜刀需要乳液，可攜帶短褲</span></li>
-        <li><span>✅</span><span>女生建議穿運動內衣，方便筋膜刀操作</span></li>
-      </ul>
+    <section class="tips" aria-label="預約注意事項">
+      <h3>預約注意事項</h3>
+      <div class="tip-card">
+        <h4>預約方式</h4>
+        <p>此頁面僅供查詢可預約時段。請複製您希望的時段，返回 LINE 官方帳號貼上，並依提示填寫預約資料。</p>
+        <p><strong>送出資料不代表預約成功，收到 Jim 回覆確認後，才算完成預約。</strong>時段可能隨時更新，實際安排以雙方確認為準。</p>
+      </div>
+      <div class="tip-card">
+        <h4>服裝與攜帶衣物</h4>
+        <p>調整會依身體狀態進行全身性的評估與處理，請穿著輕便、方便活動的服裝，並準備以下衣物供現場更換：</p>
+        <ul>
+          <li>所有客人請攜帶寬鬆、有彈性的短褲。</li>
+          <li>女性請另攜帶運動內衣，方便肩背與軀幹部位的評估及操作。</li>
+        </ul>
+        <p>筋膜刀操作會搭配乳液，並需接觸施作部位的皮膚，請配合準備合適衣物。</p>
+      </div>
+      <div class="tip-card">
+        <h4>取消、改期與遲到</h4>
+        <p>如需取消、改期或可能遲到，請提前透過 LINE 官方帳號告知，以利安排後續時段。</p>
+      </div>
     </section>
     <div class="info">
       <a class="line-btn" id="lineLink" href="#" target="_blank" rel="noopener">LINE　前往聯繫</a>
@@ -484,13 +501,19 @@ function renderSlots(info){
 }
 
 function copyBooking(m,dd,dow,start,end,button){
+  const line="--------------------------------";
   const text=[
-    "您好，我想預約筋膜調整，以下是我的資料：",
+    "您好，我想預約調整",
     "",
-    `1️⃣預約時段：${m}/${dd}（週${WD[dow]}）${start}–${end}`,
-    "2️⃣預約姓名（姓名/手機）：",
-    "3️⃣簡述想要處理的問題：",
-    "4️⃣從哪邊得知Jim膜："
+    `- 預約時段：${m}/${dd}（週${WD[dow]}）${start}–${end}`,
+    "",
+    line,
+    "首次客人請填寫基本資訊",
+    "- 預約姓名：",
+    "- 聯絡電話：",
+    "- 簡述想要處理的問題：",
+    "- 從哪邊得知Jim膜：",
+    line
   ].join("\n");
   const done=()=>{
     toast("已複製！請到 LINE 貼上，補上姓名等資料後送出");
