@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#17120e">
 <title>Jimo Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500&text=%E7%AD%8B%E8%86%9C%E8%AA%BF%E6%95%B4&display=swap">
 <meta name="description" content="查看 JIMO STUDIO 可預約時段，選好後透過 LINE 送出預約。筋膜刀・能量療癒・整合訓練。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://yuyu-hsiao-tw.github.io/jimo-booking/">
@@ -43,7 +46,7 @@ button{cursor:pointer}
 .menu{width:42px;height:42px;border:1px solid rgba(255,255,255,.16);border-radius:50%;background:rgba(255,255,255,.04);color:white;font-size:22px}
 .hero-copy{position:relative;z-index:1;margin-top:82px;text-align:center}
 .eyebrow{font-size:13px;letter-spacing:.18em;color:#d7b98f;margin:0 0 10px}
-.hero h1{font-size:42px;line-height:1.1;font-weight:500;letter-spacing:.08em;margin:0}
+.hero h1{font-family:"Zen Maru Gothic",var(--sans);font-size:42px;line-height:1.1;font-weight:500;letter-spacing:.08em;margin:0}
 .hero h1 .x{font-weight:300;color:#d7a963;margin:0 .18em;letter-spacing:0}
 .tagline{font-size:17px;letter-spacing:.12em;color:#e6bc7e;margin:12px 0 0}
 .benefits{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:32px}
@@ -143,7 +146,7 @@ button{cursor:pointer}
 .facts svg{flex:none;color:var(--brown2)}
 .line-btn{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:0;width:100%;padding:15px;border:0;border-radius:999px;background:#20bf4b;color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em}
 .note{font-size:11px;color:#978d83;margin:14px 2px 0;text-align:center}
-.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,16px);opacity:0;pointer-events:none;background:#17130f;color:white;padding:12px 16px;border-radius:14px;box-shadow:var(--shadow);font-size:13px;transition:.2s;z-index:9;max-width:88vw;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,16px);opacity:0;pointer-events:none;background:#17130f;color:white;padding:12px 16px;border-radius:14px;box-shadow:var(--shadow);font-size:13px;transition:.2s;z-index:9;width:max-content;max-width:88vw;text-align:center;white-space:pre-line;line-height:1.6}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .loading{opacity:.55;pointer-events:none}
 @media(min-width:760px){
@@ -535,25 +538,35 @@ function copyBooking(m,dd,dow,start,end,button){
     "- 從哪邊得知Jim膜：",
     line
   ].join("\n");
+  const label=`${m}/${dd}（週${WD[dow]}）${start}–${end}`;
   const done=()=>{
-    toast("已複製！請到 LINE 貼上，補上姓名等資料後送出");
+    toast(`已複製 ${label}\n請到 LINE 貼上送出`);
     document.querySelectorAll(".slot").forEach(x=>x.style.background="");
     button.style.background="#f5e7d8";
   };
+  // 先用同步方式複製（LINE 內建瀏覽器、iPhone 都比較穩），確定成功才顯示「已複製」
+  if(copySync(text)) return done();
   if(navigator.clipboard&&window.isSecureContext)
-    navigator.clipboard.writeText(text).then(done).catch(()=>fallback(text,done));
-  else fallback(text,done);
+    navigator.clipboard.writeText(text).then(done).catch(()=>toast("複製沒有成功，請再點一次時段",4000));
+  else toast("複製沒有成功，請再點一次時段",4000);
 }
-function fallback(text,done){
-  const ta=document.createElement("textarea");ta.value=text;ta.style.cssText="position:fixed;opacity:0";
-  document.body.appendChild(ta);ta.select();
-  try{document.execCommand("copy");done()}catch(e){toast(text)}
+function copySync(text){
+  const ta=document.createElement("textarea");
+  ta.value=text; ta.setAttribute("readonly","");
+  ta.style.cssText="position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;font-size:16px";
+  document.body.appendChild(ta);
+  const sel=document.getSelection(), saved=sel.rangeCount?sel.getRangeAt(0):null;
+  ta.focus(); ta.select(); ta.setSelectionRange(0,text.length);
+  let ok=false;
+  try{ok=document.execCommand("copy")}catch(e){ok=false}
   ta.remove();
+  if(saved){sel.removeAllRanges();sel.addRange(saved)}
+  return ok;
 }
 let timer;
-function toast(msg){
+function toast(msg,ms=2800){
   const t=$("toast");t.textContent=msg;t.classList.add("on");
-  clearTimeout(timer);timer=setTimeout(()=>t.classList.remove("on"),2800);
+  clearTimeout(timer);timer=setTimeout(()=>t.classList.remove("on"),ms);
 }
 function shift(n){
   const today=midnight(),last=addDays(today,DAYS_AHEAD-1);
