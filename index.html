@@ -547,7 +547,7 @@ function renderSlots(info){
 }
 
 function copyBooking(m,dd,dow,start,end,button){
-  const line="--------------------------------";
+  const line="------------------------------";
   const text=[
     "您好，我想預約調整",
     "",
@@ -582,7 +582,7 @@ $("waitCopy").addEventListener("click",e=>{
   const on=[...document.querySelectorAll(".wait-opts button.on")].map(b=>b.dataset.w);
   const want=["平日","週日","下午","晚上"].filter(w=>on.includes(w));
   if(!want.length){e.preventDefault();return toast("請至少選一個時段");}
-  const line="--------------------------------";
+  const line="------------------------------";
   const text=[
     "您好，我想排候補",
     "",
