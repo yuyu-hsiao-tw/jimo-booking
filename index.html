@@ -69,7 +69,11 @@ button{cursor:pointer}
 .times button.on{background:var(--brown2);color:#fff;box-shadow:0 4px 12px rgba(150,90,45,.25)}
 .times button.on small{color:#f6e3cf}
 .times button:disabled{opacity:.45;cursor:default}
-.calendar{border:1px solid var(--line);border-radius:22px;background:#fff;overflow:hidden;box-shadow:0 10px 26px rgba(74,48,28,.06)}
+.calendar{position:relative;border:1px solid var(--line);border-radius:22px;background:#fff;overflow:hidden;box-shadow:0 10px 26px rgba(74,48,28,.06)}
+.cal-mask{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(255,255,255,.82);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);text-align:center}
+.cal-mask[hidden]{display:none}
+.cal-mask .warn{vertical-align:-3px;margin-right:6px;color:var(--brown2)}
+.cal-mask p{margin:0;color:var(--muted);font-size:14px;font-weight:400;line-height:1.8;letter-spacing:.04em}
 .cal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 14px 10px}
 .cal-head h3{margin:0;font-size:18px}
 .nav{border:0;background:transparent;color:var(--brown2);font-size:30px;line-height:1;width:42px;height:42px;border-radius:50%}
@@ -115,6 +119,14 @@ button{cursor:pointer}
 .slot-meta{font-size:11px;color:#8a8179;margin-top:2px}
 .slot-arrow{width:30px;height:30px;border-radius:50%;background:var(--brown2);color:white;display:grid;place-items:center}
 .empty{padding:20px 4px;color:#8b8178;font-size:14px}
+.wait{margin-top:36px;padding:18px;border:1px solid var(--line);border-radius:22px;background:#fff;box-shadow:0 10px 26px rgba(74,48,28,.06)}
+.wait h3{margin:0 0 4px;font-size:17px;font-weight:650;letter-spacing:.04em;color:var(--ink)}
+.wait>p{margin:0 0 14px;color:var(--muted);font-size:13px;line-height:1.6}
+.wait-opts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.wait-opts button{appearance:none;border:0;border-radius:999px;background:#fff;padding:10px 4px;color:#7a6250;font-size:15px;font-weight:500;cursor:pointer;box-shadow:0 0 3px rgba(185,121,67,.32);transition:background .18s ease,color .18s ease,box-shadow .18s ease}
+.wait-opts button.on{background:var(--brown2);color:#fff;box-shadow:0 4px 12px rgba(150,90,45,.25)}
+.wait-line{margin-top:6px}
+.wait-link{display:inline-flex;align-items:center;gap:4px;margin-top:10px;padding:8px 16px;border:0;border-radius:999px;background:#fff;color:var(--brown2);font-size:14px;font-weight:500;cursor:pointer;box-shadow:0 0 3px rgba(185,121,67,.32)}
 .notice{display:flex;gap:10px;align-items:flex-start;margin:14px 0 0;padding:12px 14px;border-radius:14px;background:#f6ece0;border:0;color:#6b4a2e;font-size:13.5px;line-height:1.65}
 .notice[hidden]{display:none}
 .notice svg{flex:none;margin-top:2px;color:#b97943}
@@ -163,6 +175,8 @@ button{cursor:pointer}
   .line-btn:hover{background:#1aa83f;box-shadow:0 6px 16px rgba(32,191,75,.3);transform:translateY(-1px)}
   .nav:not(:disabled):hover{background:#f7eee4;border-radius:50%}
   .tip summary:hover{background:#f7eee4}
+  .wait-opts button:not(.on):hover{color:var(--brown2);box-shadow:0 0 5px rgba(185,121,67,.45)}
+  .wait-link:hover{box-shadow:0 0 5px rgba(185,121,67,.45)}
 }
 </style>
 </head>
@@ -204,6 +218,7 @@ button{cursor:pointer}
     <div class="soon" id="soon" hidden><p>最近可預約的日期</p><div id="soonList"></div></div>
 
     <div class="calendar">
+      <div class="cal-mask" id="calMask" hidden><p><svg class="warn" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 4.2 2.6 17.6A2 2 0 0 0 4.3 20.6h15.4a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0Z"/><path d="M12 9.5v4.5M12 17h.01"/></svg>暫時無法讀取行事曆<br>請直接 LINE 詢問可預約時段</p></div>
       <div class="cal-head">
         <button class="nav" id="prev" type="button" aria-label="上個月">‹</button>
         <h3 id="monthLabel">讀取中</h3>
@@ -265,6 +280,13 @@ button{cursor:pointer}
       <a class="line-btn" id="lineLink" href="#" target="_blank" rel="noopener">前往 LINE 預約</a>
       <p class="note" id="status"></p>
     </div>
+
+    <section class="wait" id="wait" aria-label="排候補">
+      <h3>找不到合適的時段？</h3>
+      <p>可複選方便的時段，按鈕會自動複製候補訊息。</p>
+      <div class="wait-opts"><button type="button" data-w="下午">下午</button><button type="button" data-w="晚上">晚上</button><button type="button" data-w="平日">平日</button><button type="button" data-w="週日">週日</button></div>
+      <a class="line-btn wait-line" id="waitCopy" href="#" target="_blank" rel="noopener">前往 LINE 候補</a>
+    </section>
   </section>
 </main>
 <div class="toast" id="toast" role="status"></div>
@@ -485,8 +507,9 @@ function render(){
   $("legendLive").innerHTML=mode==="time"?`<i></i>${pick} 可預約`:"<i></i>有可預約時段";
 
   const stamp=new Date(data.updatedAt||Date.now()).toLocaleTimeString("zh-TW",{hour:"2-digit",minute:"2-digit",hour12:false});
+  $("calMask").hidden=!data.error;
   $("status").textContent=data.error
-    ? "暫時無法讀取行事曆，請直接 LINE 詢問可預約時段。"
+    ? ""
     : data.stale
     ? `連線不穩，以下為 ${stamp} 的空檔，實際請以 LINE 確認。`
     : "";
@@ -520,7 +543,7 @@ function renderSlots(info){
     b.onclick=()=>copyBooking(m,dd,d.getDay(),start,end,b);
     list.appendChild(b);
   });
-  if(!free.length) list.innerHTML=`<div class="empty">${mode==="time"?"月曆上有小圓點的日期，這個時段還能預約。":"可以切換其他日期查看空檔。"}</div>`;
+  if(!free.length) list.innerHTML=`<div class="empty">${mode==="time"?"月曆上有小圓點的日期，這個時段還能預約。":"可以切換其他日期查看空檔。"}<br><button type="button" class="wait-link" onclick="document.getElementById('wait').scrollIntoView({behavior:'smooth',block:'center'})">或是排候補 ›</button></div>`;
 }
 
 function copyBooking(m,dd,dow,start,end,button){
@@ -539,17 +562,49 @@ function copyBooking(m,dd,dow,start,end,button){
     line
   ].join("\n");
   const label=`${m}/${dd}（週${WD[dow]}）${start}–${end}`;
-  const done=()=>{
+  copyText(text,()=>{
     toast(`已複製 ${label}\n請到 LINE 貼上送出`);
     document.querySelectorAll(".slot").forEach(x=>x.style.background="");
     button.style.background="#f5e7d8";
-  };
-  // 先用同步方式複製（LINE 內建瀏覽器、iPhone 都比較穩），確定成功才顯示「已複製」
+  },"複製沒有成功，請再點一次時段");
+}
+// 先用同步方式複製（LINE 內建瀏覽器、iPhone 都比較穩），確定成功才執行 done
+function copyText(text,done,failMsg){
   if(copySync(text)) return done();
   if(navigator.clipboard&&window.isSecureContext)
-    navigator.clipboard.writeText(text).then(done).catch(()=>toast("複製沒有成功，請再點一次時段",4000));
-  else toast("複製沒有成功，請再點一次時段",4000);
+    navigator.clipboard.writeText(text).then(done).catch(()=>toast(failMsg,4000));
+  else toast(failMsg,4000);
 }
+/* ===== 排候補 ===== */
+document.querySelectorAll(".wait-opts button").forEach(b=>b.addEventListener("click",()=>b.classList.toggle("on")));
+$("waitCopy").href=LINE_URL;
+$("waitCopy").addEventListener("click",e=>{
+  const on=[...document.querySelectorAll(".wait-opts button.on")].map(b=>b.dataset.w);
+  const want=["平日","週日","下午","晚上"].filter(w=>on.includes(w));
+  if(!want.length){e.preventDefault();return toast("請至少選一個時段");}
+  const line="--------------------------------";
+  const text=[
+    "您好，我想排候補",
+    "",
+    `- 如果有候補名額，希望時段：${want.join("、")}`,
+    "",
+    line,
+    "首次客人請填寫基本資訊",
+    "- 預約姓名：",
+    "- 聯絡電話：",
+    "- 簡述想要處理的問題：",
+    "- 從哪邊得知Jim膜：",
+    line
+  ].join("\n");
+  const msg=`已複製候補訊息（${want.join("、")}），請在 LINE 貼上送出喔！`;
+  // 同步複製成功：跳提醒後照常開啟 LINE
+  if(copySync(text)){alert(msg);return;}
+  // 備用：非同步複製，完成後在本頁開啟 LINE（避免被當成彈出視窗擋掉）
+  e.preventDefault();
+  if(navigator.clipboard&&window.isSecureContext)
+    navigator.clipboard.writeText(text).then(()=>{alert(msg);location.href=LINE_URL}).catch(()=>toast("複製沒有成功，請再按一次",4000));
+  else toast("複製沒有成功，請再按一次",4000);
+});
 function copySync(text){
   const ta=document.createElement("textarea");
   ta.value=text; ta.setAttribute("readonly","");
