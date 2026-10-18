@@ -316,7 +316,7 @@ let view,selected;
 const $=id=>document.getElementById(id);
 $("lineLink").href=LINE_URL;
 // 點 LINE 按鈕：先跳提醒，按「確定」後照常開啟 LINE（不擋連結本身，避免被瀏覽器當成彈出視窗擋掉）
-$("lineLink").addEventListener("click",()=>{alert("送出資料不代表預約成功，收到 Jim 回覆確認後，才算完成預約喔！");});
+$("lineLink").addEventListener("click",e=>{if(!confirm("送出資料不代表預約成功，收到 Jim 回覆確認後，才算完成預約喔！\n\n要前往 LINE 嗎？")) e.preventDefault();});
 $("week").innerHTML=WD.map(x=>`<div>${x}</div>`).join("");
 
 const pad=n=>String(n).padStart(2,"0");
@@ -558,8 +558,7 @@ function copyBooking(m,dd,dow,start,end,button){
     "- 預約姓名：",
     "- 聯絡電話：",
     "- 簡述想要處理的問題：",
-    "- 從哪邊得知Jim膜：",
-    line
+    "- 從哪邊得知Jim膜："
   ].join("\n");
   const label=`${m}/${dd}（週${WD[dow]}）${start}–${end}`;
   copyText(text,()=>{
@@ -593,16 +592,16 @@ $("waitCopy").addEventListener("click",e=>{
     "- 預約姓名：",
     "- 聯絡電話：",
     "- 簡述想要處理的問題：",
-    "- 從哪邊得知Jim膜：",
-    line
+    "- 從哪邊得知Jim膜："
   ].join("\n");
-  const msg=`已複製候補訊息（${want.join("、")}），請在 LINE 貼上送出喔！`;
-  // 同步複製成功：跳提醒後照常開啟 LINE
-  if(copySync(text)){alert(msg);return;}
+  const msg=`已複製候補訊息（${want.join("、")}），請在 LINE 貼上送出喔！\n\n要前往 LINE 嗎？`;
+  const copied=()=>toast(`已複製候補：${want.join("、")}\n請到 LINE 貼上送出`);
+  // 同步複製成功：顯示小提醒＋確認視窗，按「確定」才開啟 LINE
+  if(copySync(text)){copied(); if(!confirm(msg)) e.preventDefault(); return;}
   // 備用：非同步複製，完成後在本頁開啟 LINE（避免被當成彈出視窗擋掉）
   e.preventDefault();
   if(navigator.clipboard&&window.isSecureContext)
-    navigator.clipboard.writeText(text).then(()=>{alert(msg);location.href=LINE_URL}).catch(()=>toast("複製沒有成功，請再按一次",4000));
+    navigator.clipboard.writeText(text).then(()=>{copied(); if(confirm(msg)) location.href=LINE_URL;}).catch(()=>toast("複製沒有成功，請再按一次",4000));
   else toast("複製沒有成功，請再按一次",4000);
 });
 function copySync(text){
