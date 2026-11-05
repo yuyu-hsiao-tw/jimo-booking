@@ -168,7 +168,15 @@ button{cursor:pointer}
 .modal-btns button,.modal-btns a{display:flex;align-items:center;justify-content:center;padding:12px;border-radius:999px;font-size:15px;font-weight:600;letter-spacing:.06em;text-decoration:none;cursor:pointer}
 .modal-btns button{appearance:none;border:1px solid var(--line);background:#fff;color:#7a6250}
 .modal-btns a{border:0;background:var(--brown2);color:#fff;box-shadow:0 4px 12px rgba(150,90,45,.25)}
-.loading{opacity:.55;pointer-events:none}
+.calendar.is-loading{min-height:380px}
+.cal-loader{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:96px;gap:16px;background:#fff;color:var(--muted);font-size:13px;letter-spacing:.1em;transition:opacity .35s ease}
+.cal-loader.done{opacity:0;pointer-events:none}
+.spinner{position:relative;width:46px;height:46px}
+.spinner:before,.spinner:after{content:"";position:absolute;inset:0;border-radius:50%;border:3px solid transparent}
+.spinner:before{border-color:#f1e6d8}
+.spinner:after{border-top-color:var(--brown2);border-right-color:var(--gold);animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spinner:after{animation-duration:2.4s}}
 @media(min-width:760px){
  body{padding:30px 0}.app{border-radius:32px;overflow:hidden;min-height:auto}.hero{min-height:390px}
 }
@@ -225,7 +233,8 @@ button{cursor:pointer}
     <div class="times" id="times" hidden></div>
     <div class="soon" id="soon" hidden><p>最近可預約的日期</p><div id="soonList"></div></div>
 
-    <div class="calendar">
+    <div class="calendar is-loading" id="calendar">
+      <div class="cal-loader" id="calLoader" role="status" aria-live="polite"><div class="spinner" aria-hidden="true"></div><span>正在讀取最新空檔…</span></div>
       <div class="cal-mask" id="calMask" hidden><p><svg class="warn" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 4.2 2.6 17.6A2 2 0 0 0 4.3 20.6h15.4a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0Z"/><path d="M12 9.5v4.5M12 17h.01"/></svg>暫時無法讀取行事曆<br>請直接 LINE 詢問可預約時段</p></div>
       <div class="cal-head">
         <button class="nav" id="prev" type="button" aria-label="上個月">‹</button>
@@ -669,7 +678,6 @@ $("prev").onclick=()=>shift(-1);
 $("next").onclick=()=>shift(1);
 
 async function refresh(){
-  $("app").classList.add("loading");
   try{data=await load()}
   catch(e){
     console.warn(e);
@@ -678,7 +686,12 @@ async function refresh(){
     else data={busy:[],closed:[],error:true,updatedAt:new Date().toISOString()};
   }
   render();
-  $("app").classList.remove("loading");
+  const ld=$("calLoader");
+  if(ld && !ld.classList.contains("done")){
+    ld.classList.add("done");
+    $("calendar").classList.remove("is-loading");
+    setTimeout(()=>ld.remove(),400);
+  }
 }
 refresh();
 setInterval(refresh,60000);
