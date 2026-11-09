@@ -74,7 +74,12 @@ button{cursor:pointer}
 .cal-mask[hidden]{display:none}
 .cal-mask .warn{vertical-align:-3px;margin-right:6px;color:var(--brown2)}
 .cal-mask p{margin:0;color:var(--muted);font-size:14px;font-weight:400;line-height:1.8;letter-spacing:.04em}
-.cal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 14px 10px}
+.cal-head{position:relative;z-index:4;display:flex;align-items:center;justify-content:space-between;padding:16px 14px 10px}
+.month-mask{flex-direction:column;gap:6px;padding-top:40px}
+.month-mask .mm-icon{width:44px;height:44px;border-radius:50%;background:#f6ece0;color:var(--brown2);display:grid;place-items:center;margin-bottom:6px}
+.month-mask h4{margin:0;font-size:14px;font-weight:500;letter-spacing:.08em;color:#5f5750}
+.month-mask p{font-size:12px}
+.month-mask .wait-link{margin-top:8px;font-size:13px}
 .cal-head h3{margin:0;font-size:18px}
 .nav{border:0;background:transparent;color:var(--brown2);font-size:30px;line-height:1;width:42px;height:42px;border-radius:50%}
 .nav:hover:not(:disabled){background:#f7eee4}
@@ -240,6 +245,12 @@ button{cursor:pointer}
         <button class="nav" id="prev" type="button" aria-label="上個月">‹</button>
         <h3 id="monthLabel">讀取中</h3>
         <button class="nav" id="next" type="button" aria-label="下個月">›</button>
+      </div>
+      <div class="cal-mask month-mask" id="monthMask" hidden>
+        <div class="mm-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4M9.5 13.5l5 5M14.5 13.5l-5 5"/></svg></div>
+        <h4 id="monthMaskTitle">本月已無可預約時段</h4>
+        <p id="monthMaskSub"></p>
+        <button class="wait-link" id="monthMaskBtn" type="button" hidden></button>
       </div>
       <div class="week" id="week"></div>
       <div class="days" id="days"></div>
@@ -509,6 +520,31 @@ function firstFree(from){
   return null;
 }
 
+function updateMonthMask(y,m,count,today,last){
+  const mask=$("monthMask");
+  let any=false;
+  for(let n=1;n<=count&&!any;n++) if(freeOf(dayInfo(ymd(new Date(y,m,n)))).length) any=true;
+  if(data.error||any){mask.hidden=true;return}
+  const isNow=y===today.getFullYear()&&m===today.getMonth(), mon=isNow?"本月":`${m+1} 月`;
+  const label=mode==="time"&&pick?`${mon} ${pick} 已無可預約時段`:`${mon}已無可預約時段`;
+  $("monthMaskTitle").textContent=label;
+  const after=new Date(y,m+1,1);
+  let next=after<=last?firstFree(after):null;
+  if(next&&parseDate(next)>last) next=null;
+  const btn=$("monthMaskBtn");
+  if(next){
+    const d=parseDate(next);
+    $("monthMaskSub").textContent=`最近可預約：${d.getMonth()+1}/${d.getDate()}（${WD[d.getDay()]}）`;
+    btn.textContent=`查看 ${d.getMonth()+1} 月可預約時段 ›`;
+    btn.onclick=()=>{selected=next;view=new Date(d.getFullYear(),d.getMonth(),1);render();};
+    btn.hidden=false;
+  }else{
+    $("monthMaskSub").textContent="歡迎到下方排候補，或直接 LINE 詢問";
+    btn.hidden=true;
+  }
+  mask.hidden=false;
+}
+
 function render(){
   const today=midnight(),last=addDays(today,DAYS_AHEAD-1);
   if(!view) view=new Date(today.getFullYear(),today.getMonth(),1);
@@ -551,6 +587,7 @@ function render(){
 
   const stamp=new Date(data.updatedAt||Date.now()).toLocaleTimeString("zh-TW",{hour:"2-digit",minute:"2-digit",hour12:false});
   $("calMask").hidden=!data.error;
+  updateMonthMask(y,m,count,today,last);
   $("status").textContent=data.error
     ? ""
     : data.stale
