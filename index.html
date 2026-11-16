@@ -52,6 +52,26 @@ button{cursor:pointer}
 .benefits{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:32px}
 .benefit{padding:12px 6px;text-align:center;border-top:1px solid rgba(220,183,135,.28);color:#eadfd3;font-size:14px;letter-spacing:.12em}
 .benefit .ico{width:30px;height:30px;display:block;margin:0 auto}
+.benefits.two{grid-template-columns:repeat(2,1fr);gap:12px}
+button.benefit{appearance:none;background:transparent;border:0;border-top:1px solid rgba(220,183,135,.28);font-family:inherit;cursor:pointer;transition:background .2s}
+button.benefit:active{background:rgba(215,169,99,.08)}
+.pop{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(23,17,12,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.pop[hidden]{display:none}
+.info-card{position:relative;width:100%;max-width:440px;max-height:calc(100dvh - 32px);overflow:auto;-webkit-overflow-scrolling:touch;background:var(--paper);border-radius:24px;padding:22px 22px 20px;box-shadow:0 24px 60px rgba(20,12,6,.35)}
+.info-x{position:absolute;top:14px;right:14px;width:34px;height:34px;border:0;border-radius:50%;background:#f3eadf;color:#7a6250;font-size:20px;line-height:1;display:grid;place-items:center;cursor:pointer}
+.info-eyebrow{margin:0 0 4px;font-size:11px;letter-spacing:.28em;color:#b98a55}
+.info-card h3{margin:0 40px 12px 0;font-size:18px;font-weight:600;letter-spacing:.06em;color:var(--ink)}
+.info-card p{margin:0 0 12px;font-size:15px;line-height:1.8;color:#4a3f36}
+.info-card p:last-child{margin-bottom:0}
+.svc-lead{color:var(--muted)!important;font-size:14px!important}
+.svc{list-style:none;margin:4px 0 16px;padding:0}
+.svc li{display:flex;gap:12px;padding:11px 0;border-top:1px solid #efe5d9}
+.svc li:last-child{border-bottom:1px solid #efe5d9}
+.svc i{flex:none;width:26px;height:26px;border-radius:50%;background:#f6ece0;color:var(--brown2);font-style:normal;font-size:12px;display:grid;place-items:center;margin-top:1px}
+.svc b{display:block;font-size:15px;font-weight:600;color:var(--ink);letter-spacing:.04em}
+.svc span{display:block;margin-top:2px;font-size:13px;line-height:1.65;color:#7a6c60}
+.info-go{display:flex;align-items:center;justify-content:center;width:100%;padding:13px;border:0;border-radius:999px;background:var(--brown2);color:#fff;font-size:15px;font-weight:600;letter-spacing:.06em;cursor:pointer;box-shadow:0 4px 12px rgba(150,90,45,.25)}
+body.noscroll{overflow:hidden}
 .benefit b{display:flex;align-items:center;justify-content:center;height:32px;color:#d7a963;font-size:21px;font-weight:400;margin-bottom:6px}
 .sheet{position:relative;margin-top:-22px;border-radius:28px 28px 0 0;background:var(--paper);padding:28px 20px 34px;z-index:2}
 .section-title{display:flex;align-items:center;gap:12px;margin-bottom:6px}
@@ -212,10 +232,9 @@ button{cursor:pointer}
       <h1>筋膜調整</h1>
       <p class="tagline">從身體出發，回到更好的狀態</p>
     </div>
-    <div class="benefits" aria-label="服務特色">
-      <div class="benefit"><b><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="translate(0 -0.9)"><path d="M1.2 16.6C6 15.1 15 11.9 22.3 7.1C23.2 6.6 23.7 7.1 23.4 7.7C19.6 14.2 12 18.4 1.6 18.4C0.3 18.4 0.2 17 1.2 16.6Z"/></g></svg></b>筋膜刀</div>
-      <div class="benefit"><b><svg class="ico" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M3.60 7.15 L12.00 2.30 L20.40 7.15 L12.00 12.00ZM3.60 7.15 L9.48 3.76 L15.36 7.15 L9.48 10.54Z M3.60 7.15 L12.00 12.00 L12.00 21.70 L3.60 16.85ZM6.12 11.52 L12.00 14.91 L12.00 21.70 L6.12 18.30Z M20.40 7.15 L12.00 12.00 L12.00 21.70 L20.40 16.85ZM20.40 7.15 L14.52 10.54 L14.52 17.34 L20.40 13.94Z"/><path d="M12.00 2.30 L20.40 7.15 L20.40 16.85 L12.00 21.70 L3.60 16.85 L3.60 7.15Z" stroke="currentColor" stroke-width=".9" stroke-linejoin="round"/></svg></b>能量療癒</div>
-      <div class="benefit"><b><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12C9.2 6.8 1.2 6.6 1.2 12s8 5.2 10.8 0 10.8-5.4 10.8 0-8 5.2-10.8 0Z"/></svg></b>整合訓練</div>
+    <div class="benefits two" aria-label="認識 Jim膜">
+      <button class="benefit" type="button" data-info="about"><b><svg class="ico" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M3.60 7.15 L12.00 2.30 L20.40 7.15 L12.00 12.00ZM3.60 7.15 L9.48 3.76 L15.36 7.15 L9.48 10.54Z M3.60 7.15 L12.00 12.00 L12.00 21.70 L3.60 16.85ZM6.12 11.52 L12.00 14.91 L12.00 21.70 L6.12 18.30Z M20.40 7.15 L12.00 12.00 L12.00 21.70 L20.40 16.85ZM20.40 7.15 L14.52 10.54 L14.52 17.34 L20.40 13.94Z"/><path d="M12.00 2.30 L20.40 7.15 L20.40 16.85 L12.00 21.70 L3.60 16.85 L3.60 7.15Z" stroke="currentColor" stroke-width=".9" stroke-linejoin="round"/></svg></b>關於 Jim膜</button>
+      <button class="benefit" type="button" data-info="services"><b><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="translate(0 -0.9)"><path d="M1.2 16.6C6 15.1 15 11.9 22.3 7.1C23.2 6.6 23.7 7.1 23.4 7.7C19.6 14.2 12 18.4 1.6 18.4C0.3 18.4 0.2 17 1.2 16.6Z"/></g></svg></b>服務項目</button>
     </div>
   </section>
 
@@ -317,6 +336,35 @@ button{cursor:pointer}
     </section>
   </section>
 </main>
+<div class="pop" id="info-about" hidden role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+  <div class="info-card">
+    <button class="info-x" type="button" aria-label="關閉">×</button>
+    <p class="info-eyebrow">ABOUT</p>
+    <h3 id="aboutTitle">Jim膜｜境 整合工作室</h3>
+    <p>從遊戲工程師到身體調整工作，做的事變了，初心一直很簡單：用自己的能力，讓身邊的人變得更好。</p>
+    <p>過去，我在程式與邏輯裡找答案；現在，我透過觀察、傾聽與雙手，理解每個人不同的身體狀態。看見朋友從緊繃、疲憊，慢慢找回身體的輕鬆與動作的自在，是我持續學習的動力。</p>
+    <p>「Jim膜」是這段旅程的起點，「境」則是我對這個空間更深的期待：希望來到這裡的人，身體越來越好，也能停下腳步感受自己，讓身、心、靈慢慢找到平衡。</p>
+    <p>我相信，被好好照顧的人，會更有力量照顧自己，也更有餘裕把善意帶給身邊的人。</p>
+    <p>從照顧身體開始，陪你找回平衡，讓生活更好，也讓生命走向更開闊的境地。</p>
+  </div>
+</div>
+<div class="pop" id="info-services" hidden role="dialog" aria-modal="true" aria-labelledby="svcTitle">
+  <div class="info-card">
+    <button class="info-x" type="button" aria-label="關閉">×</button>
+    <p class="info-eyebrow">SERVICES</p>
+    <h3 id="svcTitle">客製化調整</h3>
+    <p class="svc-lead">依你當天的狀態與需求，搭配以下方式：</p>
+    <ul class="svc">
+      <li><i>01</i><div><b>筋膜刀</b><span>透過工具輔助調整軟組織張力，增進身體感知與關節活動，讓動作更流暢。</span></div></li>
+      <li><i>02</i><div><b>深筋膜放鬆｜內臟筋膜</b><span>以溫和手法照顧腹部深層軟組織，舒緩緊繃，找回自在的呼吸節奏。</span></div></li>
+      <li><i>03</i><div><b>徒手按摩</b><span>融合多元手法與豐富實務經驗，依身體需求調整力道與節奏，細緻舒緩緊繃。</span></div></li>
+      <li><i>04</i><div><b>整合式伸展</b><span>結合關節鬆動、牽引與 PNF 伸展，增進活動度，提升動作的協調與舒適感。</span></div></li>
+      <li><i>05</i><div><b>聲動術｜頌缽</b><span>運用頌缽的物理振動，搭配身體部位操作，協助舒緩軟組織緊繃與身體張力。</span></div></li>
+      <li><i>06</i><div><b>能量療癒</b><span>結合臼井靈氣、古埃及靈氣與卡魯納靈氣，透過能量療癒，協助放鬆與安定，照顧身心狀態。</span></div></li>
+    </ul>
+    <button class="info-go" type="button" data-go="book">查看可預約時段</button>
+  </div>
+</div>
 <div class="toast" id="toast" role="status"></div>
 <div class="modal" id="modal" hidden>
   <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalMsg">
@@ -733,6 +781,20 @@ async function refresh(){
 refresh();
 setInterval(refresh,60000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh()});
+
+/* ===== 關於 Jim膜／服務項目 彈出視窗 ===== */
+(function(){
+  let lastBtn=null;
+  const open=id=>{const m=$("info-"+id);if(!m)return;m.hidden=false;document.body.classList.add("noscroll");m.querySelector(".info-card").scrollTop=0;m.querySelector(".info-x").focus();};
+  const close=()=>{document.querySelectorAll(".pop").forEach(m=>m.hidden=true);document.body.classList.remove("noscroll");if(lastBtn)lastBtn.focus();};
+  document.querySelectorAll("[data-info]").forEach(b=>b.onclick=()=>{lastBtn=b;open(b.dataset.info)});
+  document.querySelectorAll(".pop").forEach(m=>{
+    m.addEventListener("click",e=>{if(e.target===m)close()});
+    m.querySelector(".info-x").onclick=close;
+  });
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
+  document.querySelectorAll('[data-go="book"]').forEach(b=>b.onclick=()=>{close();setTimeout(()=>document.querySelector(".calendar").scrollIntoView({behavior:"smooth",block:"center"}),50)});
+})();
 </script>
 </body>
 </html>
