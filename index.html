@@ -72,6 +72,14 @@ button.benefit:active{background:rgba(215,169,99,.08)}
 .svc span{display:block;margin-top:2px;font-size:13px;line-height:1.65;color:#7a6c60}
 .info-go{display:flex;align-items:center;justify-content:center;width:100%;padding:13px;border:0;border-radius:999px;background:var(--brown2);color:#fff;font-size:15px;font-weight:600;letter-spacing:.06em;cursor:pointer;box-shadow:0 4px 12px rgba(150,90,45,.25)}
 body.noscroll{overflow:hidden}
+.info-card::after{content:"";position:sticky;bottom:-20px;display:block;height:64px;margin:-64px -22px 0;pointer-events:none;opacity:0;transition:opacity .25s;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23b97943' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center bottom 10px/18px no-repeat,linear-gradient(rgba(255,253,249,0),rgba(255,253,249,.92) 55%,var(--paper));
+  box-shadow:inset 0 -10px 12px -10px rgba(60,40,20,.18)}
+.info-card.more::after{opacity:1}
+.info-card h3{padding-bottom:14px;border-bottom:1px solid #efe5d9;margin-right:0!important}
+.info-card .about-lead{margin:2px 0 16px;padding:2px 0 2px 14px;border-left:2px solid var(--gold);font-size:15.5px;font-weight:500;line-height:1.75;color:#8a5a33}
+#info-about .info-card p:not(.about-lead):not(.about-end):not(.info-eyebrow){font-size:14.5px;line-height:1.85;color:#5a4f46;margin-bottom:14px}
+.info-card .about-end{margin:18px 0 0;padding-top:16px;border-top:1px solid #efe5d9;text-align:center;font-size:14px;font-weight:500;line-height:1.8;letter-spacing:.04em;color:var(--brown2)}
 .benefit b{display:flex;align-items:center;justify-content:center;height:32px;color:#d7a963;font-size:21px;font-weight:400;margin-bottom:6px}
 .sheet{position:relative;margin-top:-22px;border-radius:28px 28px 0 0;background:var(--paper);padding:28px 20px 34px;z-index:2}
 .section-title{display:flex;align-items:center;gap:12px;margin-bottom:6px}
@@ -341,11 +349,11 @@ body.noscroll{overflow:hidden}
     <button class="info-x" type="button" aria-label="關閉">×</button>
     <p class="info-eyebrow">ABOUT</p>
     <h3 id="aboutTitle">Jim膜｜境 整合工作室</h3>
-    <p>從遊戲工程師到身體調整工作，做的事變了，初心一直很簡單：用自己的能力，讓身邊的人變得更好。</p>
+    <p class="about-lead">從遊戲工程師到身體調整工作，做的事變了，初心一直很簡單：用自己的能力，讓身邊的人變得更好。</p>
     <p>過去，我在程式與邏輯裡找答案；現在，我透過觀察、傾聽與雙手，理解每個人不同的身體狀態。看見朋友從緊繃、疲憊，慢慢找回身體的輕鬆與動作的自在，是我持續學習的動力。</p>
     <p>「Jim膜」是這段旅程的起點，「境」則是我對這個空間更深的期待：希望來到這裡的人，身體越來越好，也能停下腳步感受自己，讓身、心、靈慢慢找到平衡。</p>
     <p>我相信，被好好照顧的人，會更有力量照顧自己，也更有餘裕把善意帶給身邊的人。</p>
-    <p>從照顧身體開始，陪你找回平衡，讓生活更好，也讓生命走向更開闊的境地。</p>
+    <p class="about-end">從照顧身體開始，陪你找回平衡，<br>讓生活更好，也讓生命走向更開闊的境地。</p>
   </div>
 </div>
 <div class="pop" id="info-services" hidden role="dialog" aria-modal="true" aria-labelledby="svcTitle">
@@ -785,7 +793,10 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh()}
 /* ===== 關於 Jim膜／服務項目 彈出視窗 ===== */
 (function(){
   let lastBtn=null;
-  const open=id=>{const m=$("info-"+id);if(!m)return;m.hidden=false;document.body.classList.add("noscroll");m.querySelector(".info-card").scrollTop=0;m.querySelector(".info-x").focus();};
+  const fade=c=>c.classList.toggle("more",c.scrollHeight-c.clientHeight-c.scrollTop>8);
+  document.querySelectorAll(".info-card").forEach(c=>c.addEventListener("scroll",()=>fade(c),{passive:true}));
+  window.addEventListener("resize",()=>document.querySelectorAll(".pop:not([hidden]) .info-card").forEach(fade));
+  const open=id=>{const m=$("info-"+id);if(!m)return;m.hidden=false;document.body.classList.add("noscroll");const c=m.querySelector(".info-card");c.scrollTop=0;fade(c);m.querySelector(".info-x").focus({preventScroll:true});};
   const close=()=>{document.querySelectorAll(".pop").forEach(m=>m.hidden=true);document.body.classList.remove("noscroll");if(lastBtn)lastBtn.focus();};
   document.querySelectorAll("[data-info]").forEach(b=>b.onclick=()=>{lastBtn=b;open(b.dataset.info)});
   document.querySelectorAll(".pop").forEach(m=>{
